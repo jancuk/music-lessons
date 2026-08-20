@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Lesson 1: Song Builder - Music Explorer</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    :root {
+      --bg-dark: #0d0015;
+      --bg-purple: #1a0a2e;
+      --accent-violet: #8b5cf6;
+      --accent-pink: #ec4899;
+      --accent-cyan: #06b6d4;
+      --accent-gold: #fbbf24;
+      --text-light: #f0e6ff;
+      --text-dim: #a78bfa;
+    }
+    
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-purple) 50%, #2d1b4e 100%);
+      min-height: 100vh;
+      color: var(--text-light);
+      overflow-x: hidden;
+    }
+    
+    .lesson-header {
+      text-align: center;
+      padding: 20px;
+      background: rgba(0,0,0,0.3);
+      border-bottom: 1px solid rgba(139, 92, 246, 0.3);
+    }
+    
+    .lesson-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, var(--accent-violet), var(--accent-pink));
+      padding: 4px 16px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+    
+    h1 {
+      font-size: 1.8em;
+      background: linear-gradient(90deg, var(--text-light), var(--accent-cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .concept-box {
+      max-width: 600px;
+      margin: 20px auto;
+      padding: 20px;
+      background: rgba(139, 92, 246, 0.1);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      border-radius: 16px;
+      text-align: center;
+    }
+    
+    .concept-box h2 {
+      color: var(--accent-cyan);
+      font-size: 1.2em;
+      margin-bottom: 10px;
+    }
+    
+    .concept-box p {
+      color: var(--text-dim);
+      font-size: 0.95em;
+      line-height: 1.6;
+    }
+    
+    .instrument-section {
+      max-width: 700px;
+      margin: 20px auto;
+      padding: 25px;
+      background: rgba(0,0,0,0.3);
+      border-radius: 20px;
+      border: 1px solid rgba(139, 92, 246, 0.2);
+    }
+    
+    .instrument-section h3 {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 1.3em;
+    }
+    
+    .drum-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    
+    .drum-pad {
+      aspect-ratio: 1;
+      border-radius: 15px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.9em;
+      transition: transform 0.1s, box-shadow 0.1s;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      border: 3px solid rgba(255,255,255,0.2);
+    }
+    
+    .drum-pad:active, .drum-pad.pressed {
+      transform: scale(0.92);
+    }
+    
+    .drum-pad.kick {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+    }
+    
+    .drum-pad.snare {
+      background: linear-gradient(135deg, #f97316, #ea580c);
+    }
+    
+    .drum-pad.hihat {
+      background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    }
+    
+    .drum-pad.tom {
+      background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    }
+    
+    .melody-section {
+      margin-top: 20px;
+    }
+    
+    .piano-row {
+      display: flex;
+      gap: 4px;
+      justify-content: center;
+      margin: 15px 0;
+    }
+    
+    .piano-key {
+      width: 45px;
+      height: 120px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.1s;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding-bottom: 8px;
+      font-size: 0.7em;
+      font-weight: 600;
+      color: rgba(0,0,0,0.5);
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      border: 2px solid rgba(0,0,0,0.2);
+    }
+    
+    .piano-key:active, .piano-key.pressed {
+      transform: scaleY(0.95) translateY(3px);
+      filter: brightness(1.3);
+    }
+    
+    .controls {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin: 25px 0;
+      flex-wrap: wrap;
+    }
+    
+    .control-btn {
+      padding: 15px 35px;
+      border-radius: 30px;
+      font-size: 1.1em;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+    
+    .play-btn {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: white;
+    }
+    
+    .stop-btn {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      color: white;
+    }
+    
+    .control-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+    }
+    
+    .control-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    .loop-indicator {
+      text-align: center;
+      margin: 20px 0;
+    }
+    
+    .loop-steps {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    
+    .step {
+      width: 30px;
+      height: 30px;
+      border-radius: 6px;
+      background: rgba(139, 92, 246, 0.2);
+      border: 2px solid var(--accent-violet);
+      transition: all 0.1s;
+    }
+    
+    .step.active {
+      background: var(--accent-violet);
+      box-shadow: 0 0 15px var(--accent-violet);
+    }
+    
+    .step.beat-1 {
+      border-color: var(--accent-gold);
+    }
+    
+    .step.beat-1.active {
+      background: var(--accent-gold);
+      box-shadow: 0 0 15px var(--accent-gold);
+    }
+    
+    .freeplay-section {
+      margin-top: 30px;
+      padding: 25px;
+      background: rgba(6, 182, 212, 0.1);
+      border: 2px solid var(--accent-cyan);
+      border-radius: 20px;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    
+    .freeplay-section h3 {
+      color: var(--accent-cyan);
+      text-align: center;
+      margin-bottom: 15px;
+    }
+    
+    .bass-pad {
+      width: 60px;
+      height: 60px;
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8em;
+      font-weight: 600;
+      transition: all 0.1s;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      border: 2px solid rgba(255,255,255,0.2);
+    }
+    
+    .bass-pad:active, .bass-pad.pressed {
+      transform: scale(0.9);
+    }
+    
+    .bass-grid {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    
+    .lesson-nav {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      padding: 30px;
+      flex-wrap: wrap;
+    }
+    
+    .nav-link {
+      padding: 12px 25px;
+      border-radius: 25px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    
+    .nav-link.next {
+      background: linear-gradient(135deg, var(--accent-violet), var(--accent-pink));
+      color: white;
+    }
+    
+    .nav-link:hover {
+      transform: scale(1.05);
+    }
+    
+    .note-hint {
+      font-size: 0.7em;
+      color: rgba(0,0,0,0.6);
+      margin-top: 4px;
+    }
+  </style>
+</head>
+<body>
+  <header class="lesson-header">
+    <div class="lesson-badge">Lesson 1</div>
+    <h1>Song Builder</h1>
+  </header>
+  
+  <div class="concept-box">
+    <h2>🥁 Music Concept: Building a Beat</h2>
+    <p>Every great song starts with a beat! Learn to layer drum sounds to create your own rhythm patterns. Each drum has a unique sound - combine them to make music!</p>
+  </div>
+  
+  <div class="instrument-section">
+    <h3>🥁 Drum Machine</h3>
+    <div class="drum-grid">
+      <div class="drum-pad kick" data-drum="kick">
+        <span>KICK</span>
+        <span class="note-hint">Bass</span>
+      </div>
+      <div class="drum-pad snare" data-drum="snare">
+        <span>SNARE</span>
+        <span class="note-hint">Crack</span>
+      </div>
+      <div class="drum-pad hihat" data-drum="hihat">
+        <span>HI-HAT</span>
+        <span class="note-hint">Shhh</span>
+      </div>
+      <div class="drum-pad tom" data-drum="tom">
+        <span>TOM</span>
+        <span class="note-hint">Boing</span>
+      </div>
+    </div>
+    
+    <div class="loop-indicator">
+      <div>Beat Position</div>
+      <div class="loop-steps" id="loopSteps">
+        <div class="step beat-1"></div>
+        <div class="step"></div>
+        <div class="step"></div>
+        <div class="step"></div>
+        <div class="step"></div>
+        <div class="step"></div>
+        <div class="step"></div>
+        <div class="step"></div>
+      </div>
+    </div>
+    
+    <div class="controls">
+      <button class="control-btn play-btn" id="playBtn">▶ Play Loop</button>
+      <button class="control-btn stop-btn" id="stopBtn" disabled>■ Stop</button>
+    </div>
+  </div>
+  
+  <div class="instrument-section melody-section">
+    <h3>🎹 Melody Keys</h3>
+    <div class="piano-row">
+      <div class="piano-key" data-note="C" style="background: #ef4444;">C</div>
+      <div class="piano-key" data-note="D" style="background: #f97316;">D</div>
+      <div class="piano-key" data-note="E" style="background: #fbbf24;">E</div>
+      <div class="piano-key" data-note="F" style="background: #10b981;">F</div>
+      <div class="piano-key" data-note="G" style="background: #06b6d4;">G</div>
+      <div class="piano-key" data-note="A" style="background: #8b5cf6;">A</div>
+      <div class="piano-key" data-note="B" style="background: #ec4899;">B</div>
+      <div class="piano-key" data-note="C2" style="background: #ef4444;">C</div>
+    </div>
+  </div>
+  
+  <div class="freeplay-section">
+    <h3>🎸 Bass Station</h3>
+    <p style="text-align: center; color: var(--text-dim); margin-bottom: 15px;">Deep bass sounds for your groove</p>
+    <div class="bass-grid">
+      <div class="bass-pad" data-bass="C2" style="background: #4c1d95;">C2</div>
+      <div class="bass-pad" data-bass="D2" style="background: #5b21b6;">D2</div>
+      <div class="bass-pad" data-bass="E2" style="background: #6d28d9;">E2</div>
+      <div class="bass-pad" data-bass="F2" style="background: #7c3aed;">F2</div>
+      <div class="bass-pad" data-bass="G2" style="background: #8b5cf6;">G2</div>
+    </div>
+  </div>
+  
+  <nav class="lesson-nav">
+    <a href="lesson2-song-studio.html" class="nav-link next">Lesson 2: Song Studio →</a>
+  </nav>
+  
+  <script>
+  (function() {
+    'use strict';
+    
+    var audioCtx = null;
+    var masterGain = null;
+    var loopInterval = null;
+    var currentStep = 0;
+    var isPlaying = false;
+    
+    function initAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        masterGain = audioCtx.createGain();
+        masterGain.gain.value = 0.5;
+        masterGain.connect(audioCtx.destination);
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    }
+    
+    function playKick() {
+      initAudio();
+      var osc = audioCtx.createOscillator();
+      var gain = audioCtx.createGain();
+      var now = audioCtx.currentTime;
+      
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(150, now);
+      osc.frequency.exponentialRampToValueAtTime(40, now + 0.15);
+      
+      gain.gain.setValueAtTime(1, now);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+      
+      osc.connect(gain);
+      gain.connect(masterGain);
+      
+      osc.start(now);
+      osc.stop(now + 0.25);
+    }
+    
+    function playSnare() {
+      initAudio();
+      var bufferSize = audioCtx.sampleRate * 0.15;
+      var buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+      var data = buffer.getChannelData(0);
+      
+      for (var i = 0; i < bufferSize; i++) {
+        data[i] = Math.random() * 2 - 1;
+      }
+      
+      var noise = audioCtx.createBufferSource();
+      noise.buffer = buffer;
+      
+      var noiseFilter = audioCtx.createBiquadFilter();
+      noiseFilter.type = 'bandpass';
+      noiseFilter.frequency.value = 3000;
+      noiseFilter.Q.value = 1;
+      
+      var noiseGain = audioCtx.createGain();
+      var now = audioCtx.currentTime;
+      noiseGain.gain.setValueAtTime(0.8, now);
+      noiseGain.gain.exponentialRampToValueAtTime(0.01, now + 0.12);
+      
+      noise.connect(noiseFilter);
+      noiseFilter.connect(noiseGain);
+      noiseGain.connect(masterGain);
+      
+      var osc = audioCtx.createOscillator();
+      var oscGain = audioCtx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.value = 180;
+      oscGain.gain.setValueAtTime(0.5, now);
+      oscGain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+      
+      osc.connect(oscGain);
+      oscGain.connect(masterGain);
+      
+      noise.start(now);
+      noise.stop(now + 0.15);
+      osc.start(now);
+      osc.stop(now + 0.1);
+    }
+    
+    function playHiHat() {
+      initAudio();
+      var bufferSize = audioCtx.sampleRate * 0.05;
+      var buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+      var data = buffer.getChannelData(0);
+      
+      for (var i = 0; i < bufferSize; i++) {
+        data[i] = Math.random() * 2 - 1;
+      }
+      
+      var noise = audioCtx.createBufferSource();
+      noise.buffer = buffer;
+      
+      var highpass = audioCtx.createBiquadFilter();
+      highpass.type = 'highpass';
+      highpass.frequency.value = 7000;
+      
+      var bandpass = audioCtx.createBiquadFilter();
+      bandpass.type = 'bandpass';
+      bandpass.frequency.value = 10000;
+      bandpass.Q.value = 0.5;
+      
+      var gain = audioCtx.createGain();
+      var now = audioCtx.currentTime;
+      gain.gain.setValueAtTime(0.4, now);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
+      
+      noise.connect(highpass);
+      highpass.connect(bandpass);
+      bandpass.connect(gain);
+      gain.connect(masterGain);
+      
+      noise.start(now);
+    }
+    
+    function playTom() {
+      initAudio();
+      var osc = audioCtx.createOscillator();
+      var gain = audioCtx.createGain();
+      var now = audioCtx.currentTime;
+      
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(200, now);
+      osc.frequency.exponentialRampToValueAtTime(80, now + 0.15);
+      
+      gain.gain.setValueAtTime(0.8, now);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+      
+      osc.connect(gain);
+      gain.connect(masterGain);
+      
+      osc.start(now);
+      osc.stop(now + 0.2);
+    }
+    
+    function playMelodyNote(note) {
+      initAudio();
+      var frequencies = {
+        'C': 261.63, 'D': 293.66, 'E': 329.63, 'F': 349.23,
+        'G': 392.00, 'A': 440.00, 'B': 493.88, 'C2': 523.25
+      };
+      
+      var freq = frequencies[note];
+      if (!freq) return;
+      
+      var now = audioCtx.currentTime;
+      
+      var osc1 = audioCtx.createOscillator();
+      var osc2 = audioCtx.createOscillator();
+      var gain = audioCtx.createGain();
+      
+      osc1.type = 'triangle';
+      osc2.type = 'sine';
+      
+      osc1.frequency.value = freq;
+      osc2.frequency.value = freq * 2;
+      
+      gain.gain.setValueAtTime(0.4, now);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.6);
+      
+      osc1.connect(gain);
+      osc2.connect(gain);
+      gain.connect(masterGain);
+      
+      osc1.start(now);
+      osc1.stop(now + 0.6);
+      osc2.start(now);
+      osc2.stop(now + 0.6);
+    }
+    
+    function playBassNote(note) {
+      initAudio();
+      var frequencies = {
+        'C2': 65.41, 'D2': 73.42, 'E2': 82.41, 'F2': 87.31, 'G2': 98.00
+      };
+      
+      var freq = frequencies[note];
+      if (!freq) return;
+      
+      var now = audioCtx.currentTime;
+      
+      var osc = audioCtx.createOscillator();
+      var gain = audioCtx.createGain();
+      
+      osc.type = 'sawtooth';
+      osc.frequency.value = freq;
+      
+      var filter = audioCtx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.value = 300;
+      
+      gain.gain.setValueAtTime(0.35, now);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+      
+      osc.connect(filter);
+      filter.connect(gain);
+      gain.connect(masterGain);
+      
+      osc.start(now);
+      osc.stop(now + 0.4);
+    }
+    
+    function updateStepIndicator() {
+      var steps = document.querySelectorAll('.step');
+      steps.forEach(function(step, i) {
+        step.classList.remove('active');
+        if (i === currentStep) {
+          step.classList.add('active');
+        }
+      });
+    }
+    
+    function startLoop() {
+      if (isPlaying) return;
+      initAudio();
+      isPlaying = true;
+      currentStep = 0;
+      
+      document.getElementById('playBtn').disabled = true;
+      document.getElementById('stopBtn').disabled = false;
+      
+      var bpm = 120;
+      var interval = (60 / bpm / 2) * 1000;
+      
+      function tick() {
+        if (!isPlaying) return;
+        
+        updateStepIndicator();
+        
+        if (currentStep === 0 || currentStep === 4) {
+          playKick();
+        }
+        if (currentStep === 2 || currentStep === 6) {
+          playSnare();
+        }
+        playHiHat();
+        
+        currentStep = (currentStep + 1) % 8;
+      }
+      
+      tick();
+      loopInterval = setInterval(tick, interval);
+    }
+    
+    function stopLoop() {
+      isPlaying = false;
+      if (loopInterval) {
+        clearInterval(loopInterval);
+        loopInterval = null;
+      }
+      
+      document.getElementById('playBtn').disabled = false;
+      document.getElementById('stopBtn').disabled = true;
+      
+      var steps = document.querySelectorAll('.step');
+      steps.forEach(function(step) {
+        step.classList.remove('active');
+      });
+    }
+    
+    function init() {
+      var drumPads = document.querySelectorAll('.drum-pad');
+      drumPads.forEach(function(pad) {
+        pad.onpointerdown = function(e) {
+          e.preventDefault();
+          initAudio();
+          var drum = this.dataset.drum;
+          if (drum === 'kick') playKick();
+          else if (drum === 'snare') playSnare();
+          else if (drum === 'hihat') playHiHat();
+          else if (drum === 'tom') playTom();
+          
+          this.classList.add('pressed');
+          setTimeout(function() {
+            pad.classList.remove('pressed');
+          }, 100);
+        };
+      });
+      
+      var pianoKeys = document.querySelectorAll('.piano-key');
+      pianoKeys.forEach(function(key) {
+        key.onpointerdown = function(e) {
+          e.preventDefault();
+          playMelodyNote(this.dataset.note);
+          this.classList.add('pressed');
+        };
+        key.onpointerup = function() { this.classList.remove('pressed'); };
+        key.onpointerleave = function() { this.classList.remove('pressed'); };
+      });
+      
+      var bassPads = document.querySelectorAll('.bass-pad');
+      bassPads.forEach(function(pad) {
+        pad.onpointerdown = function(e) {
+          e.preventDefault();
+          playBassNote(this.dataset.bass);
+          this.classList.add('pressed');
+        };
+        pad.onpointerup = function() { this.classList.remove('pressed'); };
+        pad.onpointerleave = function() { this.classList.remove('pressed'); };
+      });
+      
+      document.getElementById('playBtn').onclick = startLoop;
+      document.getElementById('stopBtn').onclick = stopLoop;
+    }
+    
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  })();
+  </script>
+</body>
+</html>

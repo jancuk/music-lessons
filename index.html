@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Music Explorer - Learn Music Step by Step</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    :root {
+      --bg-dark: #0d0015;
+      --bg-purple: #1a0a2e;
+      --accent-violet: #8b5cf6;
+      --accent-pink: #ec4899;
+      --accent-cyan: #06b6d4;
+      --accent-gold: #fbbf24;
+      --text-light: #f0e6ff;
+      --text-dim: #a78bfa;
+    }
+    
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-purple) 50%, #2d1b4e 100%);
+      min-height: 100vh;
+      color: var(--text-light);
+    }
+    
+    .hero {
+      text-align: center;
+      padding: 60px 20px;
+      background: rgba(0,0,0,0.3);
+    }
+    
+    .logo {
+      font-size: 4em;
+      margin-bottom: 20px;
+    }
+    
+    h1 {
+      font-size: 2.5em;
+      margin-bottom: 15px;
+      background: linear-gradient(90deg, var(--text-light), var(--accent-cyan), var(--accent-pink));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .subtitle {
+      font-size: 1.2em;
+      color: var(--text-dim);
+      max-width: 500px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+    
+    .lessons-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 25px;
+      max-width: 1000px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+    
+    .lesson-card {
+      background: rgba(0,0,0,0.4);
+      border-radius: 20px;
+      padding: 30px;
+      border: 2px solid rgba(139, 92, 246, 0.3);
+      transition: all 0.3s;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+    }
+    
+    .lesson-card:hover {
+      transform: translateY(-5px);
+      border-color: var(--accent-violet);
+      box-shadow: 0 10px 40px rgba(139, 92, 246, 0.3);
+    }
+    
+    .lesson-number {
+      display: inline-block;
+      background: linear-gradient(135deg, var(--accent-violet), var(--accent-pink));
+      padding: 5px 15px;
+      border-radius: 20px;
+      font-size: 0.85em;
+      font-weight: 600;
+      margin-bottom: 15px;
+    }
+    
+    .lesson-card h2 {
+      font-size: 1.5em;
+      margin-bottom: 10px;
+      color: var(--accent-cyan);
+    }
+    
+    .lesson-card p {
+      color: var(--text-dim);
+      font-size: 0.95em;
+      line-height: 1.5;
+    }
+    
+    .lesson-icon {
+      font-size: 3em;
+      margin-bottom: 15px;
+    }
+    
+    .coming-soon {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    .coming-soon:hover {
+      transform: none;
+      box-shadow: none;
+    }
+    
+    footer {
+      text-align: center;
+      padding: 40px;
+      color: var(--text-dim);
+      font-size: 0.9em;
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="logo">🎵</div>
+    <h1>Music Explorer</h1>
+    <p class="subtitle">Learn music step by step with interactive lessons. Create beats, build songs, and discover the magic of sound!</p>
+  </header>
+  
+  <main class="lessons-grid">
+    <a href="lesson1-song-builder.html" class="lesson-card">
+      <div class="lesson-number">Lesson 1</div>
+      <div class="lesson-icon">🥁</div>
+      <h2>Song Builder</h2>
+      <p>Learn the basics of rhythm by building your first beat with drums, melody, and bass!</p>
+    </a>
+    
+    <a href="lesson2-song-studio.html" class="lesson-card">
+      <div class="lesson-number">Lesson 2</div>
+      <div class="lesson-icon">🎛️</div>
+      <h2>Song Studio</h2>
+      <p>Program musical patterns that loop automatically using a step sequencer!</p>
+    </a>
+    
+    <a href="lesson3-tempo-race.html" class="lesson-card">
+      <div class="lesson-number">Lesson 3</div>
+      <div class="lesson-icon">⏱️</div>
+      <h2>Tempo Race</h2>
+      <p>Master the concept of tempo (BPM) by racing to tap in sync with the beat!</p>
+    </a>
+    
+    <div class="lesson-card coming-soon">
+      <div class="lesson-number">Lesson 4</div>
+      <div class="lesson-icon">🎸</div>
+      <h2>Rhythm Challenge</h2>
+      <p>Coming soon - test your rhythm skills with increasingly complex patterns!</p>
+    </div>
+    
+    <div class="lesson-card coming-soon">
+      <div class="lesson-number">Lesson 5</div>
+      <div class="lesson-icon">🎹</div>
+      <h2>Chord Explorer</h2>
+      <p>Coming soon - learn how chords work and create harmonic progressions!</p>
+    </div>
+    
+    <div class="lesson-card coming-soon">
+      <div class="lesson-number">Lesson 6</div>
+      <div class="lesson-icon">🎼</div>
+      <h2>Melody Maker</h2>
+      <p>Coming soon - compose your own melodies with scales and intervals!</p>
+    </div>
+  </main>
+  
+  <footer>
+    <p>Built with Web Audio API • No downloads required • Learn music anywhere!</p>
+  </footer>
+</body>
+</html>
