@@ -1,0 +1,1277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Lesson 4: Rhythm Challenge - Music Explorer</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg-dark: #0d0015;
+      --bg-purple: #1a0a2e;
+      --accent-violet: #8b5cf6;
+      --accent-pink: #ec4899;
+      --accent-cyan: #06b6d4;
+      --accent-gold: #fbbf24;
+      --text-light: #f0e6ff;
+      --text-dim: #a78bfa;
+      --success: #10b981;
+      --danger: #ef4444;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-purple) 50%, #2d1b4e 100%);
+      min-height: 100vh;
+      color: var(--text-light);
+      overflow-x: hidden;
+    }
+
+    .lesson-header {
+      text-align: center;
+      padding: 20px;
+      background: rgba(0,0,0,0.3);
+      border-bottom: 1px solid rgba(139, 92, 246, 0.3);
+    }
+
+    .lesson-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, var(--accent-violet), var(--accent-pink));
+      padding: 4px 16px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    h1 {
+      font-size: 1.8em;
+      background: linear-gradient(90deg, var(--text-light), var(--accent-cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .concept-box {
+      max-width: 600px;
+      margin: 20px auto;
+      padding: 20px;
+      background: rgba(139, 92, 246, 0.1);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      border-radius: 16px;
+      text-align: center;
+    }
+
+    .concept-box h2 {
+      color: var(--accent-cyan);
+      font-size: 1.2em;
+      margin-bottom: 10px;
+    }
+
+    .concept-box p {
+      color: var(--text-dim);
+      font-size: 0.95em;
+      line-height: 1.6;
+    }
+
+    /* ── Challenge Area ─────────────────────────────── */
+    .challenge-area {
+      max-width: 700px;
+      margin: 20px auto;
+      padding: 25px;
+      background: rgba(0,0,0,0.3);
+      border-radius: 20px;
+      border: 1px solid rgba(139, 92, 246, 0.2);
+    }
+
+    .challenge-area h3 {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 1.2em;
+    }
+
+    .level-display {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .level-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, var(--accent-violet), var(--accent-pink));
+      padding: 6px 20px;
+      border-radius: 20px;
+      font-size: 0.9em;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .score-display {
+      text-align: center;
+      margin: 15px 0;
+    }
+
+    .score-row {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      flex-wrap: wrap;
+    }
+
+    .score-item {
+      text-align: center;
+    }
+
+    .score-label {
+      font-size: 0.8em;
+      color: var(--text-dim);
+      margin-bottom: 4px;
+    }
+
+    .score-value {
+      font-size: 2em;
+      font-weight: 700;
+      color: var(--accent-gold);
+    }
+
+    .score-value.streak { color: var(--accent-pink); }
+    .score-value.level  { color: var(--accent-cyan); }
+
+    /* ── Pattern Display ───────────────────────────── */
+    .pattern-display {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      margin: 20px 0;
+      flex-wrap: wrap;
+    }
+
+    .pattern-cell {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      background: rgba(139, 92, 246, 0.15);
+      border: 2px solid rgba(139, 92, 246, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2em;
+      transition: all 0.1s;
+    }
+
+    .pattern-cell.beat-1 {
+      border-color: rgba(251, 191, 36, 0.5);
+    }
+
+    .pattern-cell.hit {
+      background: rgba(139, 92, 246, 0.4);
+      box-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
+    }
+
+    .pattern-cell.correct {
+      background: var(--success);
+      border-color: var(--success);
+      box-shadow: 0 0 15px var(--success);
+    }
+
+    .pattern-cell.wrong {
+      background: var(--danger);
+      border-color: var(--danger);
+      box-shadow: 0 0 15px var(--danger);
+      animation: shake 0.3s ease-out;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-4px); }
+      75% { transform: translateX(4px); }
+    }
+
+    /* ── Playback Bar ─────────────────────────────── */
+    .playback-bar {
+      height: 6px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 3px;
+      margin: 15px 0;
+      overflow: hidden;
+    }
+
+    .playback-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent-cyan), var(--accent-violet));
+      border-radius: 3px;
+      width: 0%;
+      transition: width 0.05s linear;
+    }
+
+    /* ── Tap Pad ─────────────────────────────────── */
+    .tap-pad-area {
+      text-align: center;
+      margin: 25px 0;
+    }
+
+    .tap-pad {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent-violet), var(--accent-pink));
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1em;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.1s, box-shadow 0.1s;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
+    }
+
+    .tap-pad:active, .tap-pad.pressed {
+      transform: scale(0.88);
+      box-shadow: 0 0 40px rgba(236, 72, 153, 0.6);
+    }
+
+    .tap-pad.disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .tap-pad.pulse-good {
+      animation: pulseGood 0.15s ease-out;
+    }
+
+    .tap-pad.pulse-bad {
+      animation: pulseBad 0.2s ease-out;
+    }
+
+    @keyframes pulseGood {
+      0% { box-shadow: 0 0 0 rgba(16, 185, 129, 0.8); }
+      50% { box-shadow: 0 0 50px rgba(16, 185, 129, 0.8); transform: scale(1.1); }
+      100% { box-shadow: 0 0 20px rgba(139, 92, 246, 0.4); transform: scale(1); }
+    }
+
+    @keyframes pulseBad {
+      0% { box-shadow: 0 0 0 rgba(239, 68, 68, 0.8); }
+      50% { box-shadow: 0 0 50px rgba(239, 68, 68, 0.8); transform: scale(1.1); }
+      100% { box-shadow: 0 0 20px rgba(139, 92, 246, 0.4); transform: scale(1); }
+    }
+
+    .tap-hint {
+      font-size: 0.85em;
+      color: var(--text-dim);
+      margin-top: 10px;
+    }
+
+    /* ── Feedback ────────────────────────────────── */
+    .feedback {
+      text-align: center;
+      min-height: 50px;
+      margin: 15px 0;
+    }
+
+    .feedback-text {
+      font-size: 1.5em;
+      font-weight: 700;
+      animation: pop 0.3s ease-out;
+    }
+
+    @keyframes pop {
+      0% { transform: scale(0.5); opacity: 0; }
+      50% { transform: scale(1.15); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    /* ── Controls ────────────────────────────────── */
+    .controls {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin: 20px 0;
+      flex-wrap: wrap;
+    }
+
+    .control-btn {
+      padding: 12px 28px;
+      border-radius: 30px;
+      font-size: 1em;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+
+    .start-btn {
+      background: linear-gradient(135deg, var(--success), #059669);
+      color: white;
+    }
+
+    .listen-btn {
+      background: linear-gradient(135deg, var(--accent-cyan), #0891b2);
+      color: white;
+    }
+
+    .stop-btn {
+      background: linear-gradient(135deg, var(--danger), #dc2626);
+      color: white;
+    }
+
+    .next-btn {
+      background: linear-gradient(135deg, var(--accent-violet), var(--accent-pink));
+      color: white;
+    }
+
+    .control-btn:hover:not(:disabled) {
+      transform: scale(1.05);
+      box-shadow: 5px 5px 20px rgba(0,0,0,0.3);
+    }
+
+    .control-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* ── Difficulty ──────────────────────────────── */
+    .difficulty-row {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin: 15px 0;
+      flex-wrap: wrap;
+    }
+
+    .diff-btn {
+      padding: 8px 20px;
+      border-radius: 20px;
+      background: rgba(139, 92, 246, 0.2);
+      border: 2px solid var(--accent-violet);
+      color: var(--text-light);
+      font-size: 0.9em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .diff-btn:hover, .diff-btn.active {
+      background: var(--accent-violet);
+      box-shadow: 0 0 15px rgba(139, 92, 246, 0.5);
+    }
+
+    /* ── Free Play Section ───────────────────────── */
+    .freeplay-section {
+      margin-top: 40px;
+      padding: 30px;
+      background: rgba(6, 182, 212, 0.1);
+      border: 2px solid var(--accent-cyan);
+      border-radius: 20px;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .freeplay-section h3 {
+      color: var(--accent-cyan);
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .freeplay-section p {
+      color: var(--text-dim);
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 0.9em;
+    }
+
+    .percussion-row {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 15px;
+    }
+
+    .perc-pad {
+      width: 72px;
+      height: 72px;
+      border-radius: 14px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.7em;
+      transition: transform 0.1s;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      border: 3px solid rgba(255,255,255,0.2);
+    }
+
+    .perc-pad span {
+      margin-top: 2px;
+      opacity: 0.8;
+      font-size: 0.65em;
+    }
+
+    .perc-pad:active, .perc-pad.pressed {
+      transform: scale(0.88);
+    }
+
+    .perc-pad.kick   { background: linear-gradient(135deg, #ef4444, #b91c1c); }
+    .perc-pad.snare  { background: linear-gradient(135deg, #f97316, #c2410c); }
+    .perc-pad.hihat  { background: linear-gradient(135deg, #fbbf24, #d97706); }
+    .perc-pad.tom    { background: linear-gradient(135deg, #8b5cf6, #6d28d9); }
+    .perc-pad.clap   { background: linear-gradient(135deg, #ec4899, #be185d); }
+    .perc-pad.cowbell{ background: linear-gradient(135deg, #10b981, #047857); }
+
+    .piano-row {
+      display: flex;
+      justify-content: center;
+      gap: 5px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    .piano-key {
+      width: 48px;
+      height: 110px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding-bottom: 8px;
+      font-size: 0.7em;
+      font-weight: 700;
+      color: rgba(0,0,0,0.55);
+      transition: all 0.1s;
+      border: 2px solid rgba(0,0,0,0.2);
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .piano-key:active, .piano-key.pressed {
+      transform: scaleY(0.93) translateY(4px);
+      filter: brightness(1.25);
+    }
+
+    .bass-row {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 15px;
+      flex-wrap: wrap;
+    }
+
+    .bass-key {
+      width: 60px;
+      height: 50px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.75em;
+      color: rgba(255,255,255,0.7);
+      transition: all 0.1s;
+      border: 2px solid rgba(255,255,255,0.15);
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .bass-key:active, .bass-key.pressed {
+      transform: scale(0.88);
+      filter: brightness(1.2);
+    }
+
+    .lesson-nav {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      padding: 30px;
+      flex-wrap: wrap;
+    }
+
+    .nav-link {
+      padding: 12px 25px;
+      border-radius: 25px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .nav-link.prev {
+      background: rgba(139, 92, 246, 0.2);
+      border: 1px solid var(--accent-violet);
+      color: var(--text-light);
+    }
+
+    .nav-link.next {
+      background: linear-gradient(135deg, var(--accent-violet), var(--accent-pink));
+      color: white;
+    }
+
+    .nav-link:hover { transform: scale(1.05); }
+
+    .message-box {
+      text-align: center;
+      padding: 12px;
+      border-radius: 12px;
+      margin: 10px auto;
+      max-width: 400px;
+      font-weight: 600;
+    }
+
+    .message-box.info {
+      background: rgba(6, 182, 212, 0.15);
+      border: 1px solid var(--accent-cyan);
+      color: var(--accent-cyan);
+    }
+
+    .message-box.success {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid var(--success);
+      color: var(--success);
+    }
+  </style>
+</head>
+<body>
+  <header class="lesson-header">
+    <div class="lesson-badge">Lesson 4</div>
+    <h1>Rhythm Challenge</h1>
+  </header>
+
+  <div class="concept-box">
+    <h2>🥁 Music Concept: Syncopation & Rhythm Patterns</h2>
+    <p>Syncopation means playing notes off the main beat — it makes music feel bouncy and alive! In this challenge, listen to a rhythm pattern and tap it back to master syncopation.</p>
+  </div>
+
+  <div class="challenge-area">
+    <h3>🎯 Rhythm Challenge</h3>
+
+    <div class="level-display">
+      <span class="level-badge" id="levelBadge">Level 1</span>
+    </div>
+
+    <div class="score-row">
+      <div class="score-item">
+        <div class="score-label">Score</div>
+        <div class="score-value" id="scoreVal">0</div>
+      </div>
+      <div class="score-item">
+        <div class="score-label">Streak</div>
+        <div class="score-value streak" id="streakVal">0</div>
+      </div>
+      <div class="score-item">
+        <div class="score-label">Level</div>
+        <div class="score-value level" id="levelNum">1</div>
+      </div>
+    </div>
+
+    <div class="difficulty-row">
+      <button class="diff-btn active" data-diff="easy">Easy</button>
+      <button class="diff-btn" data-diff="medium">Medium</button>
+      <button class="diff-btn" data-diff="hard">Hard</button>
+    </div>
+
+    <div class="message-box info" id="messageBox">Press "Listen" to hear the pattern!</div>
+
+    <div class="pattern-display" id="patternDisplay"></div>
+    <div class="playback-bar"><div class="playback-fill" id="playbackFill"></div></div>
+
+    <div class="tap-pad-area">
+      <div class="tap-pad disabled" id="tapPad">TAP!</div>
+      <div class="tap-hint" id="tapHint">Tap to the beat</div>
+    </div>
+
+    <div class="controls">
+      <button class="control-btn listen-btn" id="listenBtn">🔊 Listen</button>
+      <button class="control-btn start-btn" id="startBtn" disabled>▶ Play</button>
+      <button class="control-btn next-btn" id="nextBtn" disabled>Next Pattern</button>
+    </div>
+  </div>
+
+  <div class="freeplay-section">
+    <h3>🥁 Percussion Kit</h3>
+    <p>Tap each pad to hear its unique sound</p>
+    <div class="percussion-row">
+      <div class="perc-pad kick" data-drum="kick">KICK<span>Thump</span></div>
+      <div class="perc-pad snare" data-drum="snare">SNARE<span>Crack</span></div>
+      <div class="perc-pad hihat" data-drum="hihat">HI-HAT<span>Shhh</span></div>
+      <div class="perc-pad tom" data-drum="tom">TOM<span>Boing</span></div>
+      <div class="perc-pad clap" data-drum="clap">CLAP<span>Snap</span></div>
+      <div class="perc-pad cowbell" data-drum="cowbell">COWBELL<span>Ding</span></div>
+    </div>
+
+    <h3 style="color: var(--accent-gold); text-align:center; margin: 20px 0 5px; font-size: 1.1em;">🎹 Melody Keys</h3>
+    <div class="piano-row" id="pianoRow"></div>
+
+    <h3 style="color: var(--accent-violet); text-align:center; margin: 15px 0 5px; font-size: 1em;">🎸 Deep Bass</h3>
+    <div class="bass-row" id="bassRow"></div>
+  </div>
+
+  <nav class="lesson-nav">
+    <a href="lesson3-tempo-race.html" class="nav-link prev">← Lesson 3: Tempo Race</a>
+    <a href="lesson5-chord-explorer.html" class="nav-link next">Lesson 5: Chord Explorer →</a>
+  </nav>
+
+<script>
+(function() {
+  'use strict';
+
+  var audioCtx = null;
+  var masterGain = null;
+
+  // ── Audio init ──────────────────────────────────────────────────────────────
+  function initAudio() {
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      masterGain = audioCtx.createGain();
+      masterGain.gain.value = 0.45;
+      masterGain.connect(audioCtx.destination);
+    }
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+  }
+
+  // ── KICK: layered sine sub + pitch body + click transient ────────────────────
+  function playKick() {
+    initAudio();
+    var now = audioCtx.currentTime;
+    var sub = audioCtx.createOscillator();
+    var subGain = audioCtx.createGain();
+    sub.type = 'sine';
+    sub.frequency.setValueAtTime(120, now);
+    sub.frequency.exponentialRampToValueAtTime(35, now + 0.18);
+    subGain.gain.setValueAtTime(0.9, now);
+    subGain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+    sub.connect(subGain);
+    subGain.connect(masterGain);
+    sub.start(now);
+    sub.stop(now + 0.35);
+
+    var body = audioCtx.createOscillator();
+    var bodyGain = audioCtx.createGain();
+    body.type = 'sine';
+    body.frequency.setValueAtTime(200, now);
+    body.frequency.exponentialRampToValueAtTime(60, now + 0.08);
+    bodyGain.gain.setValueAtTime(0.5, now);
+    bodyGain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+    body.connect(bodyGain);
+    bodyGain.connect(masterGain);
+    body.start(now);
+    body.stop(now + 0.12);
+
+    var dur = 0.04;
+    var buf = audioCtx.createBuffer(1, Math.ceil(audioCtx.sampleRate * dur), audioCtx.sampleRate);
+    var data = buf.getChannelData(0);
+    for (var i = 0; i < data.length; i++) {
+      data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (data.length * 0.3));
+    }
+    var click = audioCtx.createBufferSource();
+    click.buffer = buf;
+    var cf = audioCtx.createBiquadFilter();
+    cf.type = 'bandpass';
+    cf.frequency.value = 3000;
+    cf.Q.value = 0.5;
+    var cg = audioCtx.createGain();
+    cg.gain.setValueAtTime(0.3, now);
+    click.connect(cf);
+    cf.connect(cg);
+    cg.connect(masterGain);
+    click.start(now);
+  }
+
+  // ── SNARE: pitched body + bandpass noise + harmonic ring ──────────────────────
+  function playSnare() {
+    initAudio();
+    var now = audioCtx.currentTime;
+
+    var osc = audioCtx.createOscillator();
+    var og = audioCtx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(200, now);
+    osc.frequency.exponentialRampToValueAtTime(140, now + 0.08);
+    og.gain.setValueAtTime(0.5, now);
+    og.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+    osc.connect(og);
+    og.connect(masterGain);
+    osc.start(now);
+    osc.stop(now + 0.1);
+
+    var dur = 0.18;
+    var buf = audioCtx.createBuffer(1, Math.ceil(audioCtx.sampleRate * dur), audioCtx.sampleRate);
+    var d = buf.getChannelData(0);
+    for (var i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+    var noise = audioCtx.createBufferSource();
+    noise.buffer = buf;
+    var filt = audioCtx.createBiquadFilter();
+    filt.type = 'bandpass';
+    filt.frequency.value = 2500;
+    filt.Q.value = 0.8;
+    var ng = audioCtx.createGain();
+    ng.gain.setValueAtTime(0.8, now);
+    ng.gain.exponentialRampToValueAtTime(0.001, now + dur);
+    noise.connect(filt);
+    filt.connect(ng);
+    ng.connect(masterGain);
+    noise.start(now);
+
+    var ring = audioCtx.createOscillator();
+    var rg = audioCtx.createGain();
+    ring.type = 'sine';
+    ring.frequency.value = 440;
+    rg.gain.setValueAtTime(0.08, now);
+    rg.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+    ring.connect(rg);
+    rg.connect(masterGain);
+    ring.start(now);
+    ring.stop(now + 0.06);
+  }
+
+  // ── HI-HAT: short metallic noise + multi-partial overtones ───────────────────
+  function playHiHat() {
+    initAudio();
+    var now = audioCtx.currentTime;
+    var dur = 0.06;
+    var buf = audioCtx.createBuffer(1, Math.ceil(audioCtx.sampleRate * dur), audioCtx.sampleRate);
+    var d = buf.getChannelData(0);
+    for (var i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+    var noise = audioCtx.createBufferSource();
+    noise.buffer = buf;
+    var hp = audioCtx.createBiquadFilter();
+    hp.type = 'highpass';
+    hp.frequency.value = 7000;
+    var bp = audioCtx.createBiquadFilter();
+    bp.type = 'bandpass';
+    bp.frequency.value = 10000;
+    bp.Q.value = 1.5;
+    var g = audioCtx.createGain();
+    g.gain.setValueAtTime(0.5, now);
+    g.gain.exponentialRampToValueAtTime(0.001, now + dur);
+    noise.connect(hp);
+    hp.connect(bp);
+    bp.connect(g);
+    g.connect(masterGain);
+    noise.start(now);
+
+    var partials = [3150, 5030, 7150, 9500];
+    partials.forEach(function(freq, idx) {
+      var o = audioCtx.createOscillator();
+      var og = audioCtx.createGain();
+      o.type = 'sine';
+      o.frequency.value = freq;
+      og.gain.setValueAtTime(0.05 / (idx + 1), now);
+      og.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+      o.connect(og);
+      og.connect(masterGain);
+      o.start(now);
+      o.stop(now + 0.04);
+    });
+  }
+
+  // ── TOM: pitched with pitch envelope + ring ─────────────────────────────────
+  function playTom() {
+    initAudio();
+    var now = audioCtx.currentTime;
+    var osc = audioCtx.createOscillator();
+    var g = audioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(220, now);
+    osc.frequency.exponentialRampToValueAtTime(80, now + 0.18);
+    g.gain.setValueAtTime(0.75, now);
+    g.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+    osc.connect(g);
+    g.connect(masterGain);
+    osc.start(now);
+    osc.stop(now + 0.25);
+
+    var ring = audioCtx.createOscillator();
+    var rg = audioCtx.createGain();
+    ring.type = 'sine';
+    ring.frequency.value = 150;
+    rg.gain.setValueAtTime(0.2, now);
+    rg.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+    ring.connect(rg);
+    rg.connect(masterGain);
+    ring.start(now);
+    ring.stop(now + 0.12);
+  }
+
+  // ── CLAP: layered noise bursts + room reverb ────────────────────────────────
+  function playClap() {
+    initAudio();
+    var now = audioCtx.currentTime;
+
+    // Three quick bursts (classic 808 clap)
+    var offsets = [0, 0.01, 0.022];
+    offsets.forEach(function(offset, idx) {
+      var dur = 0.06 + idx * 0.02;
+      var buf = audioCtx.createBuffer(1, Math.ceil(audioCtx.sampleRate * dur), audioCtx.sampleRate);
+      var d = buf.getChannelData(0);
+      for (var i = 0; i < d.length; i++) {
+        d[i] = (Math.random() * 2 - 1) * Math.exp(-i / (d.length * 0.4));
+      }
+      var noise = audioCtx.createBufferSource();
+      noise.buffer = buf;
+      var filt = audioCtx.createBiquadFilter();
+      filt.type = 'bandpass';
+      filt.frequency.value = 1200 + idx * 200;
+      filt.Q.value = 0.7;
+      var g = audioCtx.createGain();
+      g.gain.setValueAtTime(0.5 - idx * 0.1, now + offset);
+      g.gain.exponentialRampToValueAtTime(0.001, now + offset + dur);
+      noise.connect(filt);
+      filt.connect(g);
+      g.connect(masterGain);
+      noise.start(now + offset);
+    });
+
+    // Tail
+    var tdur = 0.15;
+    var tbuf = audioCtx.createBuffer(1, Math.ceil(audioCtx.sampleRate * tdur), audioCtx.sampleRate);
+    var td = tbuf.getChannelData(0);
+    for (var i = 0; i < td.length; i++) td[i] = Math.random() * 2 - 1;
+    var tnoise = audioCtx.createBufferSource();
+    tnoise.buffer = tbuf;
+    var tf = audioCtx.createBiquadFilter();
+    tf.type = 'bandpass';
+    tf.frequency.value = 1500;
+    tf.Q.value = 0.5;
+    var tg = audioCtx.createGain();
+    tg.gain.setValueAtTime(0.3, now + 0.045);
+    tg.gain.exponentialRampToValueAtTime(0.001, now + 0.045 + tdur);
+    tnoise.connect(tf);
+    tf.connect(tg);
+    tg.connect(masterGain);
+    tnoise.start(now + 0.045);
+  }
+
+  // ── COWBELL: two bandpass oscillators with short decay ─────────────────────
+  function playCowbell() {
+    initAudio();
+    var now = audioCtx.currentTime;
+
+    // Fundamental + octave
+    [545, 815].forEach(function(freq, idx) {
+      var osc = audioCtx.createOscillator();
+      var filt = audioCtx.createBiquadFilter();
+      var g = audioCtx.createGain();
+      osc.type = 'square';
+      osc.frequency.value = freq;
+      filt.type = 'bandpass';
+      filt.frequency.value = freq;
+      filt.Q.value = 4;
+      g.gain.setValueAtTime(0.35 / (idx + 1), now);
+      g.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+      osc.connect(filt);
+      filt.connect(g);
+      g.connect(masterGain);
+      osc.start(now);
+      osc.stop(now + 0.2);
+    });
+  }
+
+  // ── PIANO: ADSR + harmonic overtones ────────────────────────────────────────
+  function playPiano(freq) {
+    initAudio();
+    var now = audioCtx.currentTime;
+    var harmonics = [1, 2, 3, 4, 5];
+    var amps = [1, 0.3, 0.15, 0.07, 0.03];
+    harmonics.forEach(function(mult, idx) {
+      var o = audioCtx.createOscillator();
+      var g = audioCtx.createGain();
+      o.type = 'sine';
+      o.frequency.value = freq * mult;
+      var attack = idx === 0 ? 0.005 : 0.004;
+      var peak = 0.45 * amps[idx];
+      g.gain.setValueAtTime(0.001, now);
+      g.gain.linearRampToValueAtTime(peak, now + attack);
+      g.gain.linearRampToValueAtTime(0.35 * peak, now + attack + 0.08);
+      g.gain.setValueAtTime(0.35 * peak, now + 0.3);
+      g.gain.exponentialRampToValueAtTime(0.001, now + 0.3 + 0.55);
+      o.connect(g);
+      g.connect(masterGain);
+      o.start(now);
+      o.stop(now + 0.85 + 0.1);
+    });
+  }
+
+  // ── BASS: sawtooth + low-pass filter envelope ───────────────────────────────
+  function playBass(freq) {
+    initAudio();
+    var now = audioCtx.currentTime;
+    var osc = audioCtx.createOscillator();
+    var filt = audioCtx.createBiquadFilter();
+    var g = audioCtx.createGain();
+    osc.type = 'sawtooth';
+    osc.frequency.value = freq;
+    filt.type = 'lowpass';
+    filt.frequency.setValueAtTime(1200, now);
+    filt.frequency.exponentialRampToValueAtTime(300, now + 0.2);
+    filt.Q.value = 2;
+    g.gain.setValueAtTime(0.001, now);
+    g.gain.linearRampToValueAtTime(0.5, now + 0.008);
+    g.gain.linearRampToValueAtTime(0.2, now + 0.11);
+    g.gain.exponentialRampToValueAtTime(0.001, now + 0.41);
+    osc.connect(filt);
+    filt.connect(g);
+    g.connect(masterGain);
+    osc.start(now);
+    osc.stop(now + 0.51);
+  }
+
+  // ── Pattern Engine ──────────────────────────────────────────────────────────
+  var PATTERNS = {
+    easy: [
+      [1,0,0,0, 1,0,0,0],
+      [1,0,1,0, 1,0,1,0],
+      [1,0,0,1, 0,0,1,0],
+      [0,0,1,0, 0,0,1,0, 0,0,1,0, 0,0,1,0],
+      [1,0,0,0, 0,0,1,0],
+      [0,1,0,1, 0,1,0,1],
+      [1,1,0,0, 1,1,0,0],
+    ],
+    medium: [
+      [1,0,1,0,1,0,1,0],
+      [1,0,0,1,0,1,0,0],
+      [0,1,0,0,1,0,0,1],
+      [1,0,1,1,0,1,0,1],
+      [0,0,1,1,0,0,1,0],
+      [1,1,0,1,0,1,1,0],
+      [0,1,0,1,1,0,1,0],
+      [1,0,0,0,1,0,0,1],
+    ],
+    hard: [
+      [1,0,1,0,0,1,0,1],
+      [0,1,1,0,1,0,0,1],
+      [1,0,0,1,1,0,1,0],
+      [0,1,0,1,0,1,0,1],
+      [1,1,0,0,1,0,0,1],
+      [0,0,1,1,0,1,1,0],
+      [1,0,1,1,0,0,1,1],
+      [1,1,0,1,1,0,1,0],
+    ]
+  };
+
+  var currentPattern = [];
+  var userInput = [];
+  var currentDifficulty = 'easy';
+  var patternIndex = 0;
+  var score = 0;
+  var streak = 0;
+  var level = 1;
+  var isPlayingPattern = false;
+  var isUserTurn = false;
+  var playbackTimer = null;
+  var playbackIdx = 0;
+  var patternBeatMs = 350;
+
+  function getNextPattern() {
+    var pool = PATTERNS[currentDifficulty];
+    patternIndex = (patternIndex + 1) % pool.length;
+    return pool[patternIndex].slice();
+  }
+
+  function renderPattern(pattern, containerId) {
+    var container = document.getElementById(containerId);
+    container.innerHTML = '';
+    pattern.forEach(function(note, i) {
+      var cell = document.createElement('div');
+      cell.className = 'pattern-cell';
+      if (note === 1) cell.textContent = '●';
+      if (i % 4 === 0) cell.classList.add('beat-1');
+      cell.dataset.idx = i;
+      container.appendChild(cell);
+    });
+  }
+
+  function flashCell(idx, cls, containerId) {
+    var container = document.getElementById(containerId);
+    var cells = container.children;
+    if (cells[idx]) {
+      cells[idx].classList.add(cls);
+      setTimeout(function() { cells[idx].classList.remove(cls); }, 250);
+    }
+  }
+
+  function playPatternSound(idx) {
+    if (currentPattern[idx] === 1) playKick();
+  }
+
+  function animatePlayback(pattern) {
+    clearInterval(playbackTimer);
+    playbackIdx = 0;
+    var fill = document.getElementById('playbackFill');
+    fill.style.width = '0%';
+
+    var step = 0;
+    playbackTimer = setInterval(function() {
+      if (step > 0) {
+        flashCell(step - 1, 'hit', 'patternDisplay');
+      }
+      if (step < pattern.length) {
+        playPatternSound(step);
+        fill.style.width = ((step / pattern.length) * 100) + '%';
+        step++;
+      } else {
+        clearInterval(playbackTimer);
+        fill.style.width = '100%';
+        setTimeout(function() {
+          fill.style.width = '0%';
+          // clear all hit highlights
+          var cells = document.querySelectorAll('#patternDisplay .pattern-cell');
+          cells.forEach(function(c) { c.classList.remove('hit'); });
+        }, 300);
+      }
+    }, patternBeatMs);
+  }
+
+  function startListen() {
+    if (isPlayingPattern) return;
+    initAudio();
+
+    document.getElementById('messageBox').textContent = 'Listen carefully...';
+    document.getElementById('messageBox').className = 'message-box info';
+    document.getElementById('tapPad').classList.add('disabled');
+    document.getElementById('startBtn').disabled = true;
+    document.getElementById('nextBtn').disabled = true;
+    document.getElementById('listenBtn').disabled = true;
+
+    currentPattern = getNextPattern();
+    userInput = [];
+    renderPattern(currentPattern, 'patternDisplay');
+    isPlayingPattern = true;
+
+    setTimeout(function() {
+      animatePlayback(currentPattern);
+    }, 200);
+
+    setTimeout(function() {
+      isPlayingPattern = false;
+      isUserTurn = true;
+      userInput = [];
+      document.getElementById('messageBox').textContent = 'Your turn! Tap the pattern!';
+      document.getElementById('messageBox').className = 'message-box info';
+      document.getElementById('tapPad').classList.remove('disabled');
+      document.getElementById('startBtn').disabled = false;
+      document.getElementById('listenBtn').disabled = false;
+      document.getElementById('nextBtn').disabled = false;
+    }, currentPattern.length * patternBeatMs + 400);
+  }
+
+  function handleTap() {
+    if (!isUserTurn) return;
+    var idx = userInput.length;
+    if (idx >= currentPattern.length) return;
+
+    userInput.push(1);
+    playKick();
+    var correct = currentPattern[idx] === 1;
+    flashCell(idx, correct ? 'correct' : 'wrong', 'patternDisplay');
+
+    var pad = document.getElementById('tapPad');
+    pad.classList.remove('pulse-good', 'pulse-bad');
+    void pad.offsetWidth; // reflow
+    if (correct) {
+      pad.classList.add('pulse-good');
+    } else {
+      pad.classList.add('pulse-bad');
+    }
+
+    if (correct) {
+      streak++;
+      // check for extra taps on rest beats (penalty)
+      if (currentPattern[idx] === 0) {
+        score = Math.max(0, score - 2);
+        streak = 0;
+        document.getElementById('messageBox').textContent = 'Rest! No tap needed!';
+        document.getElementById('messageBox').className = 'message-box info';
+      }
+    } else {
+      streak = 0;
+      document.getElementById('messageBox').textContent = 'Missed! That was a rest.';
+      document.getElementById('messageBox').className = 'message-box info';
+    }
+
+    updateScoreDisplay();
+
+    if (userInput.length === currentPattern.length) {
+      finishRound();
+    }
+  }
+
+  function finishRound() {
+    isUserTurn = false;
+    document.getElementById('tapPad').classList.add('disabled');
+
+    var correct = true;
+    for (var i = 0; i < currentPattern.length; i++) {
+      if (userInput[i] !== currentPattern[i]) { correct = false; break; }
+    }
+
+    if (correct) {
+      var pts = currentDifficulty === 'easy' ? 10 : currentDifficulty === 'medium' ? 20 : 30;
+      score += pts * (1 + Math.floor(streak / 3));
+      document.getElementById('messageBox').textContent = '🎉 Perfect! +' + (pts * (1 + Math.floor(streak / 3))) + ' pts!';
+      document.getElementById('messageBox').className = 'message-box success';
+      level = Math.min(10, level + (streak > 0 && streak % 3 === 0 ? 1 : 0));
+      document.getElementById('levelNum').textContent = level;
+      document.getElementById('levelBadge').textContent = 'Level ' + level;
+    } else {
+      document.getElementById('messageBox').textContent = '❌ Not quite! Try again.';
+      document.getElementById('messageBox').className = 'message-box info';
+    }
+
+    updateScoreDisplay();
+    document.getElementById('nextBtn').disabled = false;
+  }
+
+  function updateScoreDisplay() {
+    document.getElementById('scoreVal').textContent = score;
+    document.getElementById('streakVal').textContent = streak;
+  }
+
+  function setDifficulty(diff) {
+    currentDifficulty = diff;
+    patternIndex = -1;
+    document.querySelectorAll('.diff-btn').forEach(function(b) {
+      b.classList.toggle('active', b.dataset.diff === diff);
+    });
+    // adjust beat speed
+    patternBeatMs = diff === 'easy' ? 400 : diff === 'medium' ? 300 : 220;
+    resetChallenge();
+  }
+
+  function resetChallenge() {
+    clearInterval(playbackTimer);
+    isPlayingPattern = false;
+    isUserTurn = false;
+    userInput = [];
+    document.getElementById('patternDisplay').innerHTML = '';
+    document.getElementById('playbackFill').style.width = '0%';
+    document.getElementById('tapPad').classList.add('disabled');
+    document.getElementById('startBtn').disabled = true;
+    document.getElementById('listenBtn').disabled = false;
+    document.getElementById('nextBtn').disabled = true;
+    document.getElementById('messageBox').textContent = 'Press "Listen" to hear the pattern!';
+    document.getElementById('messageBox').className = 'message-box info';
+  }
+
+  // ── Build Free Play ──────────────────────────────────────────────────────────
+  function buildFreePlay() {
+    var pianoRow = document.getElementById('pianoRow');
+    var notes = [
+      { freq: 261.63, label: 'C',  color: '#8b5cf6' },
+      { freq: 293.66, label: 'D',  color: '#a78bfa' },
+      { freq: 329.63, label: 'E',  color: '#06b6d4' },
+      { freq: 349.23, label: 'F',  color: '#10b981' },
+      { freq: 392.00, label: 'G',  color: '#fbbf24' },
+      { freq: 440.00, label: 'A',  color: '#f97316' },
+      { freq: 493.88, label: 'B',  color: '#ef4444' },
+      { freq: 523.25, label: 'C2', color: '#ec4899' }
+    ];
+    notes.forEach(function(n) {
+      var k = document.createElement('div');
+      k.className = 'piano-key';
+      k.style.background = n.color;
+      k.textContent = n.label;
+      k.onpointerdown = (function(f) {
+        return function(e) {
+          e.preventDefault();
+          playPiano(f);
+          k.classList.add('pressed');
+        };
+      })(n.freq);
+      k.onpointerup = function() { k.classList.remove('pressed'); };
+      k.onpointerleave = function() { k.classList.remove('pressed'); };
+      pianoRow.appendChild(k);
+    });
+
+    var bassRow = document.getElementById('bassRow');
+    var bassNotes = [
+      { freq: 65.41, label: 'C2', color: '#4c1d95' },
+      { freq: 73.42, label: 'D2', color: '#5b21b6' },
+      { freq: 82.41, label: 'E2', color: '#6d28d9' },
+      { freq: 87.31, label: 'F2', color: '#7c3aed' },
+      { freq: 98.00, label: 'G2', color: '#8b5cf6' }
+    ];
+    bassNotes.forEach(function(n) {
+      var k = document.createElement('div');
+      k.className = 'bass-key';
+      k.style.background = n.color;
+      k.textContent = n.label;
+      k.onpointerdown = (function(f) {
+        return function(e) {
+          e.preventDefault();
+          playBass(f);
+          k.classList.add('pressed');
+        };
+      })(n.freq);
+      k.onpointerup = function() { k.classList.remove('pressed'); };
+      k.onpointerleave = function() { k.classList.remove('pressed'); };
+      bassRow.appendChild(k);
+    });
+
+    // Percussion pads
+    document.querySelectorAll('.perc-pad').forEach(function(pad) {
+      pad.onpointerdown = (function(d) {
+        return function(e) {
+          e.preventDefault();
+          if (d === 'kick')     playKick();
+          else if (d === 'snare')  playSnare();
+          else if (d === 'hihat')  playHiHat();
+          else if (d === 'tom')    playTom();
+          else if (d === 'clap')   playClap();
+          else if (d === 'cowbell') playCowbell();
+          pad.classList.add('pressed');
+        };
+      })(pad.dataset.drum);
+      pad.onpointerup = function() { pad.classList.remove('pressed'); };
+      pad.onpointerleave = function() { pad.classList.remove('pressed'); };
+    });
+  }
+
+  // ── Init ────────────────────────────────────────────────────────────────────
+  function init() {
+    // Tap pad
+    var tapPad = document.getElementById('tapPad');
+    tapPad.onpointerdown = function(e) {
+      e.preventDefault();
+      handleTap();
+    };
+
+    // Buttons
+    document.getElementById('listenBtn').onclick = startListen;
+    document.getElementById('startBtn').onclick = startListen;
+    document.getElementById('nextBtn').onclick = function() {
+      resetChallenge();
+      startListen();
+    };
+
+    // Difficulty
+    document.querySelectorAll('.diff-btn').forEach(function(btn) {
+      btn.onclick = function() { setDifficulty(btn.dataset.diff); };
+    });
+
+    buildFreePlay();
+
+    // prevent zoom
+    document.addEventListener('touchstart', function(e) {
+      if (e.touches.length > 1) e.preventDefault();
+    }, { passive: false });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+</script>
+</body>
+</html>
