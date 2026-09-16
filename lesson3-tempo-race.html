@@ -543,7 +543,7 @@
 
   <nav class="lesson-nav">
     <a href="lesson2-song-studio.html" class="nav-link prev">← Lesson 2: Song Studio</a>
-    <a href="lesson4-rhythm-challenge.html" class="nav-link next">Lesson 4: Rhythm Challenge →</a>
+    <a href="index.html" class="nav-link next">All Lessons →</a>
   </nav>
 
 <script>
@@ -557,6 +557,7 @@
   var isPlaying = false;
   var beatCount = 0;
   var accuracyHistory = [];
+  var lastBeatTime = 0;
 
   // ── Audio init ────────────────────────────────────────────────────────────
   function initAudio() {
@@ -881,6 +882,7 @@
 
     function tick() {
       if (!isPlaying) return;
+      lastBeatTime = performance.now();
       var isDownbeat = beatCount % 4 === 0;
       playMetronomeTick(isDownbeat);
       updateBeatIndicator(beatCount % 4);
@@ -917,7 +919,8 @@
 
     var now = performance.now();
     var beatInterval = 60000 / currentBPM;
-    var dist = Math.min(now % beatInterval, beatInterval - (now % beatInterval));
+    var sinceBeat = Math.max(0, now - lastBeatTime);
+    var dist = Math.min(sinceBeat, Math.abs(beatInterval - sinceBeat));
     var deviation = dist / beatInterval;
     var accuracy = Math.round((1 - deviation * 2) * 100);
     if (accuracy < 0) accuracy = 0;
@@ -983,6 +986,29 @@
     document.getElementById('lastScore').textContent = '';
   }
 
+  // Pointer Events cover mouse, touch and pen. Older browsers receive explicit
+  // touch/mouse fallbacks; the touch guard prevents one tap firing twice.
+  function bindPress(element, handler) {
+    var touchedAt = 0;
+    if (window.PointerEvent) {
+      element.onpointerdown = function(e) {
+        e.preventDefault();
+        handler(e);
+      };
+    } else {
+      element.ontouchstart = function(e) {
+        touchedAt = Date.now();
+        e.preventDefault();
+        handler(e);
+      };
+      element.onmousedown = function(e) {
+        if (Date.now() - touchedAt < 700) return;
+        e.preventDefault();
+        handler(e);
+      };
+    }
+  }
+
   // ── Build free-play instruments ────────────────────────────────────────────
   function buildPianoRoll() {
     var container = document.getElementById('pianoRoll');
@@ -1002,13 +1028,12 @@
       k.className = 'piano-key';
       k.style.background = n.color;
       k.textContent = n.label;
-      k.onpointerdown = (function(f) {
+      bindPress(k, (function(f) {
         return function(e) {
-          e.preventDefault();
           playPiano(f);
           k.classList.add('pressed');
         };
-      })(n.freq);
+      })(n.freq));
       k.onpointerup = function() { k.classList.remove('pressed'); };
       k.onpointerleave = function() { k.classList.remove('pressed'); };
       container.appendChild(k);
@@ -1028,13 +1053,12 @@
       k.className = 'bass-key';
       k.style.background = n.color;
       k.textContent = n.label;
-      k.onpointerdown = (function(f) {
+      bindPress(k, (function(f) {
         return function(e) {
-          e.preventDefault();
           playBass(f);
           k.classList.add('pressed');
         };
-      })(n.freq);
+      })(n.freq));
       k.onpointerup = function() { k.classList.remove('pressed'); };
       k.onpointerleave = function() { k.classList.remove('pressed'); };
       bassContainer.appendChild(k);
@@ -1045,10 +1069,9 @@
   function init() {
     // tap zone
     var tapZone = document.getElementById('tapZone');
-    tapZone.onpointerdown = function(e) {
-      e.preventDefault();
+    bindPress(tapZone, function(e) {
       handleTap();
-    };
+    });
 
     // tempo buttons
     document.querySelectorAll('.tempo-btn').forEach(function(btn) {
@@ -1061,16 +1084,15 @@
 
     // drum pads
     document.querySelectorAll('.drum-pad').forEach(function(pad) {
-      pad.onpointerdown = (function(d) {
+      bindPress(pad, (function(d) {
         return function(e) {
-          e.preventDefault();
           if (d === 'kick')   playKick();
           if (d === 'snare')  playSnare();
           if (d === 'hihat')  playHiHat();
           if (d === 'tom')    playTom();
           pad.classList.add('pressed');
         };
-      })(pad.dataset.drum);
+      })(pad.dataset.drum));
       pad.onpointerup = function() { pad.classList.remove('pressed'); };
       pad.onpointerleave = function() { pad.classList.remove('pressed'); };
     });
